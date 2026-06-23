@@ -1,0 +1,1 @@
+﻿public sealed record OrderRequestItem(string FruitName, decimal Quantity);
