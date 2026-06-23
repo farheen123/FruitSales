@@ -1,0 +1,45 @@
+<!--
+Pseudocode / Plan (detailed):
+1. Problem: Tests fail to compile with CS0246/CS0103 because xUnit types (Xunit namespace, FactAttribute, Assert) and domain types are not resolved.
+2. Fix approach:
+   a. Ensure the test project references the xUnit framework NuGet packages so attributes and Assert are available.
+      - Add PackageReference to "xunit".
+      - Add PackageReference to "xunit.runner.visualstudio" for test discovery in IDE and CI.
+      - Add PackageReference to "Microsoft.NET.Test.Sdk" for test running support.
+   b. Ensure the test project references the domain project that defines 'Fruit', 'LinearPricingStrategy', and 'PricingUnit'.
+      - Add a ProjectReference to the domain project's .csproj (assumed path ../FruitSales.Domain/FruitSales.Domain.csproj).
+   c. Target net8.0 and set LangVersion to 12 to match project characteristics.
+   d. After applying this file: run 'dotnet restore' and 'dotnet build'. If errors about missing enum members (e.g. PricingUnit.Pound) persist, inspect the domain project to confirm the enum contains the expected members or update tests to match the domain.
+3. Implementation below updates the test project's .csproj file accordingly.
+-->
+
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Match provided project characteristics -->
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>12.0</LangVersion>
+    <IsPackable>false</IsPackable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- xUnit framework -->
+    <PackageReference Include="xunit" Version="2.4.2" />
+    <!-- Test runner integration for Visual Studio / dotnet test -->
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <!-- Required test SDK -->
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Reference domain project so tests can resolve Fruit, PricingUnit, LinearPricingStrategy, etc.
+         Adjust the path if your domain project file is located elsewhere or named differently. -->
+    <ProjectReference Include="..\FruitSales\FruitSales.csproj" />
+  </ItemGroup>
+
+</Project>
